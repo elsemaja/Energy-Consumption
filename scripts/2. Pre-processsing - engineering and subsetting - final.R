@@ -8,8 +8,8 @@
 #                                                                             #
 ###############################################################################
 
-# run previous script
-source('1. Connect to database and download dataframes - final.R')
+# get the data ----
+yrs_2007tm2010 <- readRDS(file = 'data/totalData.rds')
 
 # Combine tables into one dataframe using dplyr ----
 yrs_2007tm2010 <- bind_rows(yr_2007SELECT, 
@@ -48,14 +48,6 @@ yrs_2007tm2010$Day <- day(yrs_2007tm2010$DateTime)
 yrs_2007tm2010$Hour <- hour(yrs_2007tm2010$DateTime)
 yrs_2007tm2010$Minute <- minute(yrs_2007tm2010$DateTime)
 
-# Pre-process Year, Quarter, Month, Week, Weekday, Day, into factors
-yrs_2007tm2010$Year <- as.factor(yrs_2007tm2010$Year)
-yrs_2007tm2010$Quarter <- as.factor(yrs_2007tm2010$Quarter)
-yrs_2007tm2010$Month <- as.factor(yrs_2007tm2010$Month)
-yrs_2007tm2010$Week <- as.factor(yrs_2007tm2010$Week)
-yrs_2007tm2010$Weekday <- as.factor(yrs_2007tm2010$Weekday)
-yrs_2007tm2010$Day <- as.factor(yrs_2007tm2010$Day)
-
 
 # Add attribute GAP and sub meter 4 based from other attributes ----
 yrs_2007tm2010 <- mutate(yrs_2007tm2010, 
@@ -90,12 +82,14 @@ DailyMean <- yrs_2007tm2010 %>%
             mean_sub4 = mean(Sub_metering_4),
             mean_gap = mean(GAP))
 
+# gather all the values of the submeters in one column and turn columns of submeters
+# into values. Later this dataframe is used for the shiny app, to filter the 
+# values of the corresponding submeters.
 DailyMeanGathered <- DailyMean %>% 
   gather(key = 'sub', value = 'value', 
          mean_sub1, mean_sub2, mean_sub3, mean_sub4, mean_gap) %>% 
   rename(ds = Date,
          y = value)  
-
 
 # weekly
 WeeklyMean <- yrs_2007tm2010 %>%

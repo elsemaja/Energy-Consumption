@@ -2,13 +2,21 @@
 library("shiny")
 library("shinydashboard")
 library("dygraphs")
-
+library("plotly")
+library(dplyr)
+library(tidyr)
+library(prophet)
+library(shiny)
 
 # import data ----
-DailyMean <- readRDS(file = "dataShiny.rds")
+DailyMean <- readRDS(file = "data/dataShiny.rds")
+yrs_2007tm2010 <- readRDS(file = 'data/totalData.rds')
+YearlyMean <- readRDS(file = 'data/YearlyMeanData.rds')
+
+# create subchoices for the sidebar, they need to correspond with the names of the values
+# in the dataset 
 sub_choices <- c("mean_sub1", "mean_sub2", "mean_sub3", "mean_sub4", "mean_gap")
 
-library(shiny)
 
 ui <- dashboardPage(
   
